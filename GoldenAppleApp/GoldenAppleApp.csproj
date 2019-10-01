@@ -1,0 +1,35 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>netcoreapp3.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="Migrations\20190930164613_DataUpdate.cs" />
+    <Compile Remove="Migrations\20190930164613_DataUpdate.Designer.cs" />
+    <Compile Remove="Migrations\20190930164628_PropertyUpdate.cs" />
+    <Compile Remove="Migrations\20190930164628_PropertyUpdate.Designer.cs" />
+    <Compile Remove="Migrations\20190930165509_DataUpdate.cs" />
+    <Compile Remove="Migrations\20190930165509_DataUpdate.Designer.cs" />
+    <Compile Remove="Migrations\20190930165616_PropertyUpdate.cs" />
+    <Compile Remove="Migrations\20190930165616_PropertyUpdate.Designer.cs" />
+    <Compile Remove="Migrations\20190930170609_InitialCreate.cs" />
+    <Compile Remove="Migrations\20190930170609_InitialCreate.Designer.cs" />
+    <Compile Remove="Migrations\20190930171317_DataUpdate.cs" />
+    <Compile Remove="Migrations\20190930171317_DataUpdate.Designer.cs" />
+    <Compile Remove="Migrations\20190930171423_InitialCreate.cs" />
+    <Compile Remove="Migrations\20190930171423_InitialCreate.Designer.cs" />
+    <Compile Remove="Migrations\20190930172119_DataUpdate.cs" />
+    <Compile Remove="Migrations\20190930172119_DataUpdate.Designer.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="3.0.0" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="3.0.0">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+  </ItemGroup>
+
+</Project>

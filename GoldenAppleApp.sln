@@ -1,0 +1,34 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.29324.140
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GoldenAppleApp", "GoldenAppleApp\GoldenAppleApp.csproj", "{651268A2-AF1B-4C10-96AB-4B072569E6D1}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GoldenAppleTest", "GoldenAppleTest\GoldenAppleTest.csproj", "{1D039337-BBA3-4668-AF8A-036FC26FA21E}"
+	ProjectSection(ProjectDependencies) = postProject
+		{651268A2-AF1B-4C10-96AB-4B072569E6D1} = {651268A2-AF1B-4C10-96AB-4B072569E6D1}
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{651268A2-AF1B-4C10-96AB-4B072569E6D1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{651268A2-AF1B-4C10-96AB-4B072569E6D1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{651268A2-AF1B-4C10-96AB-4B072569E6D1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{651268A2-AF1B-4C10-96AB-4B072569E6D1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1D039337-BBA3-4668-AF8A-036FC26FA21E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1D039337-BBA3-4668-AF8A-036FC26FA21E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1D039337-BBA3-4668-AF8A-036FC26FA21E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1D039337-BBA3-4668-AF8A-036FC26FA21E}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {08E6BED6-A680-4F04-9404-3A22527AFBAA}
+	EndGlobalSection
+EndGlobal
