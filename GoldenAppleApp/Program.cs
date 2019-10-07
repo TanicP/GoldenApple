@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using GoldenAppleApp;
 
+
 namespace GoldenAppleApp
 {
     class Program
@@ -15,188 +16,39 @@ namespace GoldenAppleApp
             int result = -1;
             while (result != 9)
             {
-                result = MainMenu();
+                result = Menu.MainMenu();
             }
         }
-        static int MainMenu()
-        {
-            int result = -1;
-            ConsoleKeyInfo cki;
-            bool cont = false;
-            do
-            {
-                Console.Clear();
-                WriteHeader("Main Menu");
-                Console.WriteLine("\r\nPlease select from the list below for what you would like to do");
-                Console.WriteLine("1. List All Datas");
-                Console.WriteLine("3. Data Entry Menu");
-                Console.WriteLine("4. Data Modification Menu");
-                Console.WriteLine("9. Exit");
-                cki = Console.ReadKey();
-                try
-                {
-                    result = Convert.ToInt16(cki.KeyChar.ToString());
-                    if (result == 1)
-                    {
-                        DisplayAllDatas();
-                    }
-                    else if (result == 3)
-                    {
-                        DataEntryMenu();
-                    }
-                    else if (result == 4)
-                    {
-                        DataModificationMenu();
-                    }
-                    else if (result == 9)
-                    {
-                        // We are exiting so nothing to do
-                        cont = true;
-                    }
-                }
-                catch (System.FormatException)
-                {
-                    // a key that wasn't a number
-                }
-            }
-            while (!cont);
-            return result;
-        }
-        static void DataEntryMenu()
-        {
-            ConsoleKeyInfo cki;
-            int result = -1;
-            bool cont = false;
-            do
-            {
-                Console.Clear();
-                WriteHeader("Data Entry Menu");
-                Console.WriteLine("\r\nPlease select from the list below for what you would like to do");
-                Console.WriteLine("1. Add a New Data");
-                Console.WriteLine("2. Add a New SubData");//
-                Console.WriteLine("3. Add a New Property");//
-                Console.WriteLine("9. Exit Menu");
-                cki = Console.ReadKey();
-                try
-                {
-                    result = Convert.ToInt16(cki.KeyChar.ToString());
-                    if (result == 1)
-                    {
-                        AddData();
-                    }
-                    else if (result == 2)
-                    {
-                        //  AddSubData();
-                    }
-                    else if (result == 3)
-                    {
-                        //AddNewProperty();
-                    }
-                    else if (result == 9)
-                    {
-                        // We are exiting so nothing to do
-                        cont = true;
-                    }
-                }
-                catch (System.FormatException)
-                {
-                    // a key that wasn't a number
-                }
-            } while (!cont);
-        }
-        static void DataModificationMenu()
-        {
-            ConsoleKeyInfo cki;
-            int result = -1;
-            bool cont = false;
-            do
-            {
-                Console.Clear();
-                WriteHeader("Data Modification Menu");
-                Console.WriteLine("\r\nPlease select from the list below for what you would like to do");
-                Console.WriteLine("1. Delete Datas");
-                Console.WriteLine("2. Modify Datas");
 
-                Console.WriteLine("8. Delete All Datas");
-                Console.WriteLine("9. Exit Menu");
-                cki = Console.ReadKey();
-                try
-                {
-                    result = Convert.ToInt16(cki.KeyChar.ToString());
-                    if (result == 1)
-                    {
-                        SelectDatas("Delete");
-                    }
-                    else if (result == 2)
-                    {
-                        SelectDatas("Modify");
-                    }
 
-                    else if (result == 8)
-                    {
-                        DeleteAllDatas();
-                    }
-
-                    else if (result == 9)
-                    {
-                        // We are exiting so nothing to do
-                        cont = true;
-                    }
-                }
-                catch (System.FormatException)
-                {
-                    // a key that wasn't a number
-                }
-            } while (!cont);
-        }
-
-        //helper
-        static void WriteHeader(string headerText)
+        public static List<Property> GetProperties()
         {
-            Console.WriteLine(string.Format("{0," + ((Console.WindowWidth / 2) +
-            headerText.Length / 2) + "}", headerText));
-        }
-        static bool ValidateYorN(string entry)
-        {
-            bool result = false;
-            if (entry.ToLower() == "y" || entry.ToLower() == "n")
-            {
-                result = true;
-            }
-            return result;
-        }
-        static bool ValidateTorF(string entry)
-        {
-            bool result = false;
-            if (entry.ToLower() == "t" || entry.ToLower() == "f")
-            {
-                result = true;
-            }
-            return result;
-        }
-        static bool CheckForExistingDatas(string dataname)
-        {
-            bool exists = false;
+            List<Property> lProperty = new List<Property>();
             using (var context = new ApplicationContext())
             {
-                var data = context.Datas.Where(d => d.Name == dataname);
-                if (data.Count() > 0)
-                {
-                    exists = true;
-                }
+                lProperty = context.Propertys.ToList();
             }
-            return exists;
+            return lProperty;
         }
-        static Data GetDataByName(string name)
+        public static Property GetProperty(string title)
         {
-            var context = new ApplicationContext();
-            Data os = context.Datas.FirstOrDefault(i => i.Name == name);
-            return os;
+            Property Property;
+            List<Property> lProperty = GetProperties();
+            using (var context = new ApplicationContext())
+            {
+                Property = lProperty.Find(x => x.Title == title);
+            }
+            return Property;
+        }
+        public static void DisplayProperties(List<Property> lProperty)
+        {
+            foreach (Property pr in lProperty)
+            {
+                Console.WriteLine($"\n Title: {pr.Title}");
+            }
         }
 
-
-        //functions
-        static Data AddData()
+        public static Data AddData()
         {
             Console.Clear();
             ConsoleKeyInfo cki;
@@ -204,10 +56,47 @@ namespace GoldenAppleApp
             bool cont = false;
             Data data = new Data();
             string dataName = "";
-            WriteHeader("Add New line in Data");
+            string title = "";
+            Helper.WriteHeader("Add New line in Data");
+            List<Property> lProperty = GetProperties();
+            Property Property = new Property();
+            if (lProperty.Count == 0)
+            {
+                Property = AddNewProperty();
+            }
+            else
+            {
+                DisplayProperties(lProperty);
+                Console.WriteLine("Enter the Property title you would like to use.");
+                Console.WriteLine("To add a new Property enter [a]");
+                do
+                {
+                    cki = Console.ReadKey(true);
+                    if (cki.Key == ConsoleKey.A)
+                    {
+                        Property = AddNewProperty();
+                        cont = true;
+                    }
+                    else
+                    {
+                        title = Console.ReadLine();
+                        if (lProperty.Exists(x => x.Title == title))
+                        {
+                            Property = lProperty.Find(x => x.Title == title);
+                            cont = true;
+                        }
+                        else
+                        {
+                            // No match, could add a counter here and after a certain number of attempts
+                            // Add in some error handling
+                        }
+                    }
+                } while (!cont);
+            }
+            data.PropId = Property.Id;
             do
             {
-                Console.WriteLine("Enter the Name");
+                Console.WriteLine("Enter the Name of Data");
                 dataName = Console.ReadLine();
                 if (dataName.Length >= 2)
                 {
@@ -237,15 +126,15 @@ namespace GoldenAppleApp
                 Console.WriteLine("Enter flag [t or f]");
                 cki = Console.ReadKey();
                 result = cki.KeyChar.ToString();
-                cont = ValidateTorF(result);
+                cont = Helper.ValidateTorF(result);
             } while (!cont);
             if (result.ToLower() == "f")
             {
-                data.Flag = true;
+                data.Flag = false;
             }
             else
             {
-                data.Flag = false;
+                data.Flag = true;
             }
 
             do
@@ -254,11 +143,11 @@ namespace GoldenAppleApp
                 Console.WriteLine($"You entered {data.Name} as the Data Name\r\nCount you entered {data.Count}.\r\n Flag you entered {data.Flag}.\r\nDo you wish to continue? [y or n]");
                 cki = Console.ReadKey();
                 result = cki.KeyChar.ToString();
-                cont = ValidateYorN(result);
+                cont = Helper.ValidateYorN(result);
             } while (!cont);
             if (result.ToLower() == "y")
             {
-                bool exists = CheckForExistingDatas(data.Name);
+                bool exists = Functions.CheckForExistingDatas(data.Name);
                 if (exists)
                 {
                     Console.WriteLine("\r\nData already exists in the database\r\nPress any key to continue...");
@@ -281,22 +170,170 @@ namespace GoldenAppleApp
             }
             return data;
         }
-        static void DisplayAllDatas()
+        public static Property AddNewProperty()
+        {
+            Console.Clear();
+            ConsoleKeyInfo cki;
+            string result;
+            bool cont = false;
+            Property pr = new Property();
+            string title = "";
+            Helper.WriteHeader("Add New line in Property");
+            do
+            {
+                Console.WriteLine("Enter the title");
+                title = Console.ReadLine();
+                if (title.Length >= 2)
+                {
+                    cont = true;
+                }
+                else
+                {
+                    Console.WriteLine("Please enter a valid title of at least 2 characters.\r\nPress and key to continue...");
+                    Console.ReadKey();
+                }
+            } while (!cont);
+            pr.Title = title;
+            do
+            {
+                Console.Clear();
+                Console.WriteLine($"You entered {pr.Title} as the Property title.\r\nDo you wish to continue? [y or n]");
+                cki = Console.ReadKey();
+                result = cki.KeyChar.ToString();
+                cont = Helper.ValidateYorN(result);
+            } while (!cont);
+            if (result.ToLower() == "y")
+            {
+                bool exists = Functions.CheckForExistingProperties(pr.Title);//
+                if (exists)
+                {
+                    Console.WriteLine("\r\nProperty already exists in the database\r\nPress any key to continue...");
+                    Console.ReadKey();
+                }
+                else
+                {
+                    using (var context = new ApplicationContext())
+                    {
+                        Console.WriteLine("\r\nAttempting to save changes...");
+                        context.Propertys.Add(pr);
+                        int i = context.SaveChanges();
+                        if (i == 1)
+                        {
+                            Console.WriteLine("Contents Saved\r\nPress any key to continue...");
+                            Console.ReadKey();
+                        }
+                    }
+                }
+            }
+            return pr;
+        }
+        public static SubData AddSubData()
+        {
+            Console.Clear();
+            ConsoleKeyInfo cki;
+            string result;
+            bool cont = false;
+            SubData SubData = new SubData();
+            decimal Value;
+            string dataName = "";
+
+            Helper.WriteHeader("Add New line in SubData");
+            List<Data> lData = Functions.GetDatas();
+            Data Data = new Data();
+            if (lData.Count == 0)
+            {
+                Data = AddData();
+            }
+            else
+            {
+                DisplayAllDatas();
+                Console.WriteLine("Enter the Data Name you would like to use.");
+                Console.WriteLine("To add a new Data enter [a]");
+                do
+                {
+                    cki = Console.ReadKey(true);
+                    if (cki.Key == ConsoleKey.A)
+                    {
+                        Data = AddData();
+                        cont = true;
+                    }
+                    else
+                    {
+                        dataName = Console.ReadLine();
+                        if (lData.Exists(x => x.Name == dataName))
+                        {
+                            Data = lData.Find(x => x.Name == dataName);
+                            cont = true;
+                        }
+                        else
+
+                        {
+                            Console.WriteLine("There is no data with such name");
+                        }
+                    }
+                } while (!cont);
+            }
+            SubData.dataId = Data.Id;
+            do
+            {
+                Console.WriteLine("Enter the Value of SubData");
+
+                Value = Convert.ToDecimal(Console.ReadLine());
+                cont = true;
+
+            } while (!cont);
+            SubData.Value = Value;
+            do
+            {
+                Console.Clear();
+                Console.WriteLine($"You entered {SubData.Value} as the SubData value.\r\nDo you wish to continue? [y or n]");
+                cki = Console.ReadKey();
+                result = cki.KeyChar.ToString();
+                cont = Helper.ValidateYorN(result);
+            } while (!cont);
+            if (result.ToLower() == "y")
+            {
+
+                using (var context = new ApplicationContext())
+                {
+                    Console.WriteLine("\r\nAttempting to save changes...");
+                    context.SubDatas.Add(SubData);
+                    int i = context.SaveChanges();
+                    if (i == 1)
+                    {
+                        Console.WriteLine("Contents Saved\r\nPress any key to continue...");
+                        Console.ReadKey();
+                    }
+                }
+
+            }
+            return SubData;
+            ///
+        }
+        public static void DisplayAllDatas()
         {
             Console.Clear();
             Console.WriteLine("Datas");
             using (var context = new ApplicationContext())
             {
                 Console.ForegroundColor = ConsoleColor.Black;
-                foreach (var data in context.Datas.ToList())
+                Console.BackgroundColor = ConsoleColor.White;
+                foreach (var prop in context.Propertys.ToList())
                 {
-                    Console.WriteLine($"Name: {data.Name,-39}\tCount: {data.Count,-10}\tFalg: {data.Flag}");
+                    Console.WriteLine($"Property: {prop.Title}");
+                    foreach (var data in context.Datas.Where(d => d.PropId == prop.Id).ToList())
+                    {
+                        Console.WriteLine($"\t Name: {data.Name,-30}\tCount: {data.Count,-10}\tFalg: {data.Flag}");
+                        foreach (var subData in context.SubDatas.Where(s => s.dataId == data.Id).ToList())
+                        {
+                            Console.WriteLine($"\t\t Value: {subData.Value}");
+                        }
+                    }
                 }
             }
-            Console.WriteLine("\r\nAny key to continue...");
-            Console.ReadKey();
+
         }
-        static void DeleteAllDatas()
+        public static void DeleteAllDatas()
         {
             using (var context = new ApplicationContext())
             {
@@ -319,11 +356,12 @@ namespace GoldenAppleApp
                 Console.ReadKey();
             }
         }
-        static void SelectDatas(string operation)
+        public static void SelectDatas(string operation)
         {
             ConsoleKeyInfo cki;
+            bool exit = false;
             Console.Clear();
-            WriteHeader($"{operation} an Existing Datas");
+            Helper.WriteHeader($"{operation} an Existing Datas");
             Console.WriteLine($"{"ID",-35}|{"Name",-20}|{"Count",-20}|Flag");
             Console.WriteLine("-------------------------------------- -----------");
             using (var context = new ApplicationContext())
@@ -344,6 +382,7 @@ namespace GoldenAppleApp
                 {
                     cont = true;
                     dataName = "";
+                    exit = true;
                 }
                 else if (cki.Key == ConsoleKey.Enter)
                 {
@@ -372,21 +411,23 @@ namespace GoldenAppleApp
                 {
                     dataName = Console.ReadLine();
                 }
-                    
+
             } while (!cont);
-            
-            if ("Delete" == operation)
+            if (!exit)
             {
-                  DeleteData(dataName);
-            }
-            else if ("Modify" == operation)
-            {
-                 ModifyData(dataName);
+                if ("Delete" == operation)
+                {
+                    DeleteData(dataName);
+                }
+                else if ("Modify" == operation)
+                {
+                    ModifyData(dataName);
+                }
             }
         }
         static void DeleteData(string name)
         {
-            Data d = GetDataByName(name);
+            Data d = Functions.GetDataByName(name);
             if (d != null)
             {
                 Console.WriteLine($"\r\nAre you sure you want to delete {d.Name}?[y or n]");
@@ -397,7 +438,7 @@ namespace GoldenAppleApp
                 {
                     cki = Console.ReadKey(true);
                     result = cki.KeyChar.ToString();
-                    cont = ValidateYorN(result);
+                    cont = Helper.ValidateYorN(result);
                 } while (!cont);
 
                 if ("y" == result.ToLower())
@@ -422,28 +463,32 @@ namespace GoldenAppleApp
             {
                 Console.WriteLine("\r\nOperating System Not Found!");
                 Console.ReadKey();
-               // SelectDatas("Delete");
+                // SelectDatas("Delete");
             }
         }
         static void ModifyData(string name)
         {
-            Data data = GetDataByName(name);
+            Data data = Functions.GetDataByName(name);
             Console.Clear();
             char operation = '0';
             bool cont = false;
+            bool exit = false;
             ConsoleKeyInfo cki;
-            WriteHeader("Update Data");
+            Helper.WriteHeader("Update Data");
             if (data != null)
             {
                 Console.WriteLine($"Name: {data.Name,-39}\tCount: {data.Count,-10}\tFalg: {data.Flag}");
-                
+
                 Console.WriteLine("To modify the name press 1\r\nTo modify if the Count press 2\r\nTo modify if the Flag press 3");
                 Console.WriteLine("Hit Esc to exit this menu");
                 do
                 {
                     cki = Console.ReadKey(true);
                     if (cki.Key == ConsoleKey.Escape)
+                    {
                         cont = true;
+                        exit = true;
+                    }
                     else
                     {
                         if (char.IsNumber(cki.KeyChar))
@@ -470,71 +515,201 @@ namespace GoldenAppleApp
                     }
                 } while (!cont);
             }
-            if (operation == '1')
+            if (!exit)
             {
-                string dataName;
-                cont = false;
-                do
+                if (operation == '1')
                 {
-                    dataName = Console.ReadLine();
-                    if (dataName.Length >= 2)
+                    string dataName;
+                    cont = false;
+                    do
                     {
+                        dataName = Console.ReadLine();
+                        if (dataName.Length >= 2)
+                        {
+                            cont = true;
+                        }
+                        else
+                        {
+                            Console.WriteLine("Please enter a valid name of at least 2 characters.\r\nPress and key to continue...");
+                            Console.ReadKey();
+                        }
+                    } while (!cont);
+                    data.Name = dataName;
+                }
+                else if (operation == '2')
+                {
+                    int Count;
+                    do
+                    {
+                        Count = Convert.ToInt32(Console.ReadLine());
                         cont = true;
+                    } while (!cont);
+                    data.Count = Count;
+
+                }
+                else if (operation == '3')
+                {
+                    string k;
+                    do
+                    {
+                        cki = Console.ReadKey(true);
+                        k = cki.KeyChar.ToString();
+                        cont = Helper.ValidateTorF(k);
+                    } while (!cont);
+
+                    if (k == "t")
+                    {
+                        data.Flag = true;
                     }
                     else
                     {
-                        Console.WriteLine("Please enter a valid name of at least 2 characters.\r\nPress and key to continue...");
-                        Console.ReadKey();
+                        data.Flag = false;
                     }
-                } while (!cont);
-                data.Name = dataName;
-            }
-            else if (operation == '2')
-            {
-                int Count;
-                do
-                {
-                    Count = Convert.ToInt32(Console.ReadLine());
-                    cont = true;
-                } while (!cont);
-                data.Count = Count;
-                
-            }
-            else if (operation == '3')
-            {
-                string k;
-                do
-                {
-                    cki = Console.ReadKey(true);
-                    k = cki.KeyChar.ToString();
-                    cont = ValidateTorF(k);
-                } while (!cont);
-
-                if (k == "t")
-                {
-                    data.Flag = true;
                 }
-                else
-                {
-                    data.Flag = false;
-                }
-            }
-            using (var context = new ApplicationContext())
-            {
-                var o = context.Datas.FirstOrDefault(i => i.Id == data.Id);
-                if (o != null)
-                {
-                    // just making sure
-                    o.Name = data.Name;
-                    o.Flag = data.Flag;
-                    o.Count = data.Count;
 
-                    Console.WriteLine("\r\nUpdating the database...");
-                    context.SaveChanges();
-                    Console.WriteLine("Done!\r\nHit any key to continue...");
+                using (var context = new ApplicationContext())
+                {
+                    var o = context.Datas.FirstOrDefault(i => i.Id == data.Id);
+                    if (o != null)
+                    {
+                        // just making sure
+                        o.Name = data.Name;
+                        o.Flag = data.Flag;
+                        o.Count = data.Count;
+
+                        Console.WriteLine("\r\nUpdating the database...");
+                        context.SaveChanges();
+                        Console.WriteLine("Done!\r\nHit any key to continue...");
+                    }
                 }
             }
             Console.ReadKey();
         }
+
+        public static void DisplayAllDatasForProperty(string title, Boolean flag)
+        {
+            Console.Clear();
+            Console.WriteLine("\r\nRetrieving Property information.");
+            using (ApplicationContext context = new ApplicationContext())
+            {
+                var prd = from d in context.Datas
+                          where d.Flag == flag
+                          join p in context.Propertys on d.PropId equals p.Id
+                          where p.Title == title
+                          join sb in context.SubDatas on d.Id equals sb.dataId into lJoin
+                          from sb in lJoin.DefaultIfEmpty()
+                          select new { Poperty = p.Title, dataName = d.Name, count = d.Count, Value = sb != null ? sb.Value : (decimal?)null };
+                foreach (var p in prd)
+                {
+                    Console.WriteLine($"\t Poperty: {p.Poperty} Name: {p.dataName}\tCount: {p.count} \tValue: {p.Value}");
+                }
+
+                /* Property Property = GetProperty(title);
+
+                 foreach (var data in context.Datas.Where(d => d.PropId == Property.Id).ToList())
+                 {
+                     Console.WriteLine($"\t Name: {data.Name,-30}\tCount: {data.Count,-10}\tFalg: {data.Flag}");
+                     foreach (var subData in context.SubDatas.Where(s => s.dataId == data.Id).ToList())
+                     {
+                         Console.WriteLine($"\t Value: {subData.Value}");
+                     }
+                 }*/
+            }
+        }
+
+        public static void DisplayAllSubDatasForProperty(string title)
+        {
+            Console.Clear();
+            Console.WriteLine("\r\nRetrieving Property information.");
+            using (ApplicationContext context = new ApplicationContext())
+            {
+                var prd = from d in context.Datas
+                          join p in context.Propertys on d.PropId equals p.Id
+                          where p.Title == title
+                          join sb in context.SubDatas on d.Id equals sb.dataId
+                          select new { Poperty = p.Title, Value = sb != null ? sb.Value : (decimal?)null };
+                foreach (var p in prd)
+                {
+                    Console.WriteLine($"\t Poperty: {p.Poperty}\tValue: {p.Value}");
+                }
+            }
+        }
+
+        public static void DisplaySumValueForProperty(string title, Boolean flag)
+        {
+            Console.Clear();
+            Console.WriteLine("\r\nRetrieving Property information.");
+            using (ApplicationContext context = new ApplicationContext())
+            {
+                foreach (var prop in context.Propertys.Where(p => p.Title == title))
+                {
+                    var prdx = context.SubDatas//.Join(context.Datas, sb => sb.dataId, d => d.id )
+                        .GroupBy(d => d.Id)
+                        .Select(sd => new SubData { Value = sd.Sum(s => s.Value) });
+                    foreach (var p in prdx)
+                    {
+                        Console.WriteLine($" \tSum of Value: {p.Value}");
+                    }
+
+                    var prd = from sb in context.SubDatas
+                                  //  where d.Flag == flag
+                              join d in context.Datas on sb.dataId equals d.Id
+                                 where d.PropId == prop.Id
+                              group new { sb, d } by d.Id into grouped
+                              select new { grouped.Key, sum = grouped.Select(x => x.sb.Value).Sum(), title = grouped.Select(x => x.d.Name) };
+
+                    foreach (var p in prd)
+                    {
+                        Console.WriteLine($"\t Poperty: {p.title} \tSum of Value: {p.sum}");
+                    }
+                }
+            }
+        }
+
     }
+    class Functions
+    {
+        public static bool CheckForExistingProperties(string prname)
+            {
+                bool exists = false;
+                using (var context = new ApplicationContext())
+                {
+                    var data = context.Propertys.Where(p => p.Title == prname);
+                    if (data.Count() > 0)
+                    {
+                        exists = true;
+                    }
+                }
+                return exists;
+            }
+        public static bool CheckForExistingDatas(string dataname)
+        {
+            bool exists = false;
+            using (var context = new ApplicationContext())
+            {
+                var data = context.Datas.Where(d => d.Name == dataname);
+                if (data.Count() > 0)
+                {
+                    exists = true;
+                }
+            }
+            return exists;
+        }
+        public static Data GetDataByName(string name)
+        {
+            var context = new ApplicationContext();
+            Data os = context.Datas.FirstOrDefault(i => i.Name == name);
+            return os;
+        }
+        public static List<Data> GetDatas()
+        {
+            List<Data> lData = new List<Data>();
+            using (var context = new ApplicationContext())
+            {
+                lData = context.Datas.ToList();
+            }
+            return lData;
+        }
+    }
+
 }
