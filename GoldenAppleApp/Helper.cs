@@ -4,7 +4,7 @@ using System.Text;
 
 namespace GoldenAppleApp
 {
-    class Helper
+    public class Helper
     {
         public static void WriteHeader(string headerText)
         {

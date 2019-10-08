@@ -7,7 +7,7 @@ using GoldenAppleApp;
 
 namespace GoldenAppleApp
 {
-    class Program
+    public class Program
     {
         static void Main(string[] args)
         {
@@ -667,7 +667,7 @@ namespace GoldenAppleApp
         }
 
     }
-    class Functions
+    public class Functions
     {
         public static bool CheckForExistingProperties(string prname)
             {
